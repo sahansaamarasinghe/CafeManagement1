@@ -1,0 +1,9 @@
+# Ignore build output and VS junk
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.pdb
+*.log
