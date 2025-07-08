@@ -15,8 +15,41 @@ namespace WebApplication2.Services
             _context = context;
         }
 
+        //public async Task PlaceOrderAsync(string userId, OrderRequestDTO dto)
+        //{
+        //    var order = new Order
+        //    {
+        //        UserId = userId,
+        //        OrderItems = new List<OrderItem>(),
+        //        OrderDate = DateTime.UtcNow
+        //    };
+
+        //    decimal total = 0;
+
+        //    foreach (var item in dto.Items)
+        //    {
+        //        var food = await _context.FoodItems.FindAsync(item.FoodItemId);
+        //        if (food == null) throw new Exception("Invalid Food Item");
+
+        //        total += food.Price * item.Quantity;
+
+        //        order.OrderItems.Add(new OrderItem
+        //        {
+        //            FoodItemId = food.Id,
+        //            Quantity = item.Quantity
+        //        });
+        //    }
+
+        //    order.TotalAmount = total;
+        //    _context.Orders.Add(order);
+        //    await _context.SaveChangesAsync();
+        //}
+
         public async Task PlaceOrderAsync(string userId, OrderRequestDTO dto)
         {
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("User ID is null. Ensure the user is authenticated.");
+
             var order = new Order
             {
                 UserId = userId,
@@ -29,7 +62,7 @@ namespace WebApplication2.Services
             foreach (var item in dto.Items)
             {
                 var food = await _context.FoodItems.FindAsync(item.FoodItemId);
-                if (food == null) throw new Exception("Invalid Food Item");
+                if (food == null) throw new Exception($"Invalid Food Item ID: {item.FoodItemId}");
 
                 total += food.Price * item.Quantity;
 
@@ -41,6 +74,7 @@ namespace WebApplication2.Services
             }
 
             order.TotalAmount = total;
+
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
         }

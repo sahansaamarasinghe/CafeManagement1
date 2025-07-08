@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.DTOs;
 using WebApplication2.Interfaces;
+using WebApplication2.Models;
 
 namespace WebApplication2.Controllers
 {
@@ -51,6 +53,25 @@ namespace WebApplication2.Controllers
         {
             // No server-side logout for JWT — client should delete token
             return Ok(new { message = "Logout successful. Please remove token on client side." });
+        }
+
+        [HttpPost("set-password")]
+        public async Task<IActionResult> SetPassword([FromBody] ChangePasswordDTO dto, [FromServices] UserManager<ApplicationUser> userManager)
+        {
+            var user = await userManager.FindByEmailAsync(dto.Email);
+            if (user == null) return NotFound("User not found.");
+
+            var resetResult = await userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+            if (!resetResult.Succeeded)
+                return BadRequest(resetResult.Errors);
+
+            if (!user.EmailConfirmed)
+            {
+                var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                await userManager.ConfirmEmailAsync(user, confirmToken);
+            }
+
+            return Ok("Password set and email confirmed successfully.");
         }
     }
 }

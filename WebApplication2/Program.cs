@@ -66,20 +66,20 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 var jwtConfig = builder.Configuration.GetSection("JwtConfig");
 var secretKey = Encoding.UTF8.GetBytes(jwtConfig["Key"]);
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtConfig["Issuer"],
-            ValidAudience = jwtConfig["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(secretKey)
-        };
-    });
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//    .AddJwtBearer(options =>
+//    {
+//        options.TokenValidationParameters = new TokenValidationParameters
+//        {
+//            ValidateIssuer = true,
+//            ValidateAudience = true,
+//            ValidateLifetime = true,
+//            ValidateIssuerSigningKey = true,
+//            ValidIssuer = jwtConfig["Issuer"],
+//            ValidAudience = jwtConfig["Audience"],
+//            IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+//        };
+//    });
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -136,7 +136,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 //builder.Services.AddOpenApi();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
@@ -148,6 +148,21 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = 403;
+        return Task.CompletedTask;
+    };
+
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = 401;
+        return Task.CompletedTask;
+    };
+});
 var app = builder.Build();
 
 
@@ -172,6 +187,30 @@ using (var scope = app.Services.CreateScope())
 //        options.RoutePrefix = string.Empty;
 //    });
 //}
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtConfig["Issuer"],    // must match the token’s iss
+            ValidAudience = jwtConfig["Audience"],  // must match the token’s aud
+            IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+        };
+
+        // 🔎  TEMP: write any validation failure to the console
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = ctx =>
+            {
+                Console.WriteLine($"JWT-FAIL → {ctx.Exception.Message}");
+                return Task.CompletedTask;
+            }
+        };
+    });
 
 
 
@@ -187,14 +226,17 @@ if (app.Environment.IsDevelopment())
 
 
 
-app.UseCors("AllowAll"); 
+//app.UseCors("AllowAll");
+//app.UseHttpsRedirection();
+//app.UseAuthentication();
+//app.UseAuthorization();
 
+//app.MapControllers();
+
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-app.UseHttpsRedirection();
-
 
 
 app.Run();

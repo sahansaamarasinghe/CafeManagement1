@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.DTOs;
+using WebApplication2.Helpers;
 using WebApplication2.Models;
 
 namespace WebApplication2.Controllers
@@ -89,18 +90,36 @@ namespace WebApplication2.Controllers
             return Ok("User deleted successfully");
         }
 
+        //[HttpPost("{id}/role")]
+        //public async Task<IActionResult> AssignRole(string id, AssignRoleDTO dto)
+        //{
+        //    var user = await _userManager.FindByIdAsync(id);
+        //    if (user == null) return NotFound();
+
+        //    var result = await _userManager.AddToRoleAsync(user, dto.Role);
+        //    if (!result.Succeeded)
+        //        return BadRequest(result.Errors);
+
+        //    return Ok("Role assigned successfully");
+        //}
+
         [HttpPost("{id}/role")]
         public async Task<IActionResult> AssignRole(string id, AssignRoleDTO dto)
         {
+            if (!RoleConstants.All.Contains(dto.Role))
+                return BadRequest("Invalid role.");
+
             var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
+            if (user is null) return NotFound();
+
+            // Prevent accidental duplicate assignment
+            if (await _userManager.IsInRoleAsync(user, dto.Role))
+                return BadRequest("User already has that role.");
 
             var result = await _userManager.AddToRoleAsync(user, dto.Role);
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
-
-            return Ok("Role assigned successfully");
+            return result.Succeeded ? Ok("Role assigned.") : BadRequest(result.Errors);
         }
+
     }
 }
 

@@ -42,6 +42,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "WebApplication2.Controllers.AuthController",
+    "Method": "SetPassword",
+    "RelativePath": "api/Auth/set-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "WebApplication2.DTOs.ChangePasswordDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "WebApplication2.Controllers.OrderController",
     "Method": "PlaceOrder",
     "RelativePath": "api/Order",

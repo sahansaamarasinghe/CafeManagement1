@@ -2,12 +2,15 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.DTOs;
+using WebApplication2.Helpers;
 using WebApplication2.Interfaces;
 using WebApplication2.Models;
 
 namespace WebApplication2.Controllers
 {
-   // [Authorize(Roles = "Customer")]
+    //[Authorize(Roles = "Customer")]
+    //  [Authorize]
+    [Authorize(Roles = RoleConstants.Customer)]
     [ApiController]
     [Route("api/[controller]")]
     public class OrderController : ControllerBase
@@ -22,10 +25,22 @@ namespace WebApplication2.Controllers
             _userManager = userManager;
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> PlaceOrder([FromBody] OrderRequestDTO dto)
+        //{
+        //    var userId = _userManager.GetUserId(User);
+        //    await _orderService.PlaceOrderAsync(userId, dto);
+        //    return Ok("Order placed successfully");
+        //}
+
+        [Authorize(Roles = RoleConstants.Customer)]
         [HttpPost]
         public async Task<IActionResult> PlaceOrder([FromBody] OrderRequestDTO dto)
         {
-            var userId = _userManager.GetUserId(User);
+            //var email = "john@example.com";
+            //var testing = _userManager.FindByEmailAsync(email);
+            var userId = _userManager.GetUserId(User); // 
+
             await _orderService.PlaceOrderAsync(userId, dto);
             return Ok("Order placed successfully");
         }

@@ -29,48 +29,48 @@ namespace WebApplication2.Services
 
         //    // Logic to create user, assign role, return JWT
         //}
-
         public async Task<AuthResponseDTO> RegisterAsync(RegisterDTO dto)
         {
-            var existingUser = await _userManager.FindByEmailAsync(dto.Email);
-            if (existingUser != null) throw new Exception("User already exists");
+            // 1️⃣  Figure out which role we’ll assign
+            var roleToAssign = string.IsNullOrWhiteSpace(dto.Role)
+                               ? RoleConstants.Customer
+                               : dto.Role.Trim();
 
+            if (!RoleConstants.All.Contains(roleToAssign))
+                throw new Exception("Invalid role.");
+
+            if (roleToAssign == RoleConstants.Admin)             // self-registration guard
+                throw new Exception("You are not allowed to create an Admin account.");
+
+            // 2️⃣  Ensure the email isn’t already taken
+            if (await _userManager.FindByEmailAsync(dto.Email) is not null)
+                throw new Exception("User already exists.");
+
+            // 3️⃣  Create the ApplicationUser object
             var user = new ApplicationUser
             {
                 Email = dto.Email,
-                UserName = dto.UserName,  
-                FullName = dto.FullName    
-                //FullName = dto.Name
+                UserName = dto.UserName,
+                FullName = dto.FullName
             };
 
-            var result = await _userManager.CreateAsync(user, dto.Password);
-            if (!result.Succeeded)
+            // 4️⃣  Persist it with the supplied password
+            var createResult = await _userManager.CreateAsync(user, dto.Password);
+            if (!createResult.Succeeded)
             {
-                var error = string.Join(", ", result.Errors.Select(e => e.Description));
+                var error = string.Join(", ", createResult.Errors.Select(e => e.Description));
                 throw new Exception($"Registration failed: {error}");
             }
 
-            //if (!await _userManager.RoleExistsAsync(dto.Role))
-            //    await _userManager.CreateAsync(new IdentityRole(dto.Role));
-
-            //await _userManager.AddToRoleAsync(user, dto.Role);
-
-
-            var roleToAssign = string.IsNullOrWhiteSpace(dto.Role) ? "Customer" : dto.Role;
-
+            // 5️⃣  Ensure the role exists, then add the user to it
             if (!await _roleManager.RoleExistsAsync(roleToAssign))
-            {
                 await _roleManager.CreateAsync(new IdentityRole(roleToAssign));
-            }
 
             await _userManager.AddToRoleAsync(user, roleToAssign);
 
-
+            // 6️⃣  Build JWT + response
             var roles = await _userManager.GetRolesAsync(user);
             var token = JwtTokenGenerator.GenerateToken(user, roles, _config);
-
-            //var roles = await _userManager.GetRolesAsync(user);
-            //var token = JwtTokenGenerator.GenerateToken(user, roles, _config);
 
             return new AuthResponseDTO
             {
@@ -79,6 +79,57 @@ namespace WebApplication2.Services
                 Roles = roles
             };
         }
+
+
+        //public async Task<AuthResponseDTO> RegisterAsync(RegisterDTO dto)
+        //{
+        //    var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+        //    if (existingUser != null) throw new Exception("User already exists");
+
+        //    var user = new ApplicationUser
+        //    {
+        //        Email = dto.Email,
+        //        UserName = dto.UserName,  
+        //        FullName = dto.FullName    
+        //        //FullName = dto.Name
+        //    };
+
+        //    var result = await _userManager.CreateAsync(user, dto.Password);
+        //    if (!result.Succeeded)
+        //    {
+        //        var error = string.Join(", ", result.Errors.Select(e => e.Description));
+        //        throw new Exception($"Registration failed: {error}");
+        //    }
+
+        //    //if (!await _userManager.RoleExistsAsync(dto.Role))
+        //    //    await _userManager.CreateAsync(new IdentityRole(dto.Role));
+
+        //    //await _userManager.AddToRoleAsync(user, dto.Role);
+
+
+        //    var roleToAssign = string.IsNullOrWhiteSpace(dto.Role) ? "Customer" : dto.Role;
+
+        //    if (!await _roleManager.RoleExistsAsync(roleToAssign))
+        //    {
+        //        await _roleManager.CreateAsync(new IdentityRole(roleToAssign));
+        //    }
+
+        //    await _userManager.AddToRoleAsync(user, roleToAssign);
+
+
+        //    var roles = await _userManager.GetRolesAsync(user);
+        //    var token = JwtTokenGenerator.GenerateToken(user, roles, _config);
+
+        //    //var roles = await _userManager.GetRolesAsync(user);
+        //    //var token = JwtTokenGenerator.GenerateToken(user, roles, _config);
+
+        //    return new AuthResponseDTO
+        //    {
+        //        Username = user.UserName,
+        //        Token = token,
+        //        Roles = roles
+        //    };
+        //}
 
         public async Task<AuthResponseDTO> LoginAsync(LoginDTO dto)
         {
