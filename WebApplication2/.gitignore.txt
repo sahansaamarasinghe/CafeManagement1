@@ -1,8 +1,0 @@
-# Ignore build output and VS junk
-bin
-obj
-.vs
-.user
-.suo
-.db
-.sqlite

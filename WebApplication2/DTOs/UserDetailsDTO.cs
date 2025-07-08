@@ -1,0 +1,25 @@
+﻿namespace WebApplication2.DTOs
+{
+    public class UserDetailsDTO
+    {
+        
+        public string Id { get; set; }
+        public string FullName { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public List<string> Roles { get; set; }
+    }
+
+    public class UpdateUserDTO
+    {
+        public string FullName { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+    }
+
+    public class AssignRoleDTO
+    {
+        public string Role { get; set; }
+    }
+}
+

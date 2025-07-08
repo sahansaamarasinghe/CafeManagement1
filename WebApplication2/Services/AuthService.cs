@@ -1,0 +1,107 @@
+﻿using Microsoft.AspNetCore.Identity;
+using WebApplication2.DTOs;
+using WebApplication2.Helpers;
+using WebApplication2.Interfaces;
+using WebApplication2.Models;
+
+namespace WebApplication2.Services
+{
+    public class AuthService : IAuthService
+    {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IConfiguration _config;
+
+        public AuthService(UserManager<ApplicationUser> userManager,
+                           SignInManager<ApplicationUser> signInManager,
+                           RoleManager<IdentityRole> roleManager,
+                           IConfiguration config)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _roleManager = roleManager;
+            _config = config;
+        }
+
+        //public async Task<AuthResponseDTO> RegisterAsync(RegisterDTO dto)
+        //{
+
+        //    // Logic to create user, assign role, return JWT
+        //}
+
+        public async Task<AuthResponseDTO> RegisterAsync(RegisterDTO dto)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+            if (existingUser != null) throw new Exception("User already exists");
+
+            var user = new ApplicationUser
+            {
+                Email = dto.Email,
+                UserName = dto.UserName,  
+                FullName = dto.FullName    
+                //FullName = dto.Name
+            };
+
+            var result = await _userManager.CreateAsync(user, dto.Password);
+            if (!result.Succeeded)
+            {
+                var error = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"Registration failed: {error}");
+            }
+
+            //if (!await _userManager.RoleExistsAsync(dto.Role))
+            //    await _userManager.CreateAsync(new IdentityRole(dto.Role));
+
+            //await _userManager.AddToRoleAsync(user, dto.Role);
+
+
+            var roleToAssign = string.IsNullOrWhiteSpace(dto.Role) ? "Customer" : dto.Role;
+
+            if (!await _roleManager.RoleExistsAsync(roleToAssign))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(roleToAssign));
+            }
+
+            await _userManager.AddToRoleAsync(user, roleToAssign);
+
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = JwtTokenGenerator.GenerateToken(user, roles, _config);
+
+            //var roles = await _userManager.GetRolesAsync(user);
+            //var token = JwtTokenGenerator.GenerateToken(user, roles, _config);
+
+            return new AuthResponseDTO
+            {
+                Username = user.UserName,
+                Token = token,
+                Roles = roles
+            };
+        }
+
+        public async Task<AuthResponseDTO> LoginAsync(LoginDTO dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+                throw new Exception("Invalid email or password");
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = JwtTokenGenerator.GenerateToken(user, roles, _config);
+
+            return new AuthResponseDTO
+            {
+                Username = user.UserName,
+                Token = token,
+                Roles = roles
+            };
+        }
+
+        //public async Task<AuthResponseDTO> LoginAsync(LoginDTO dto)
+        //{
+        //    // Logic to validate user and return JWT
+        //}
+    }
+
+}
+
