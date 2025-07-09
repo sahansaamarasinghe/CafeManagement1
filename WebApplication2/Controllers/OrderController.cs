@@ -10,7 +10,7 @@ namespace WebApplication2.Controllers
 {
     //[Authorize(Roles = "Customer")]
     //  [Authorize]
-    [Authorize(Roles = RoleConstants.Customer)]
+    //[Authorize(Roles = RoleConstants.Customer)]
     [ApiController]
     [Route("api/[controller]")]
     public class OrderController : ControllerBase
@@ -33,7 +33,7 @@ namespace WebApplication2.Controllers
         //    return Ok("Order placed successfully");
         //}
 
-        [Authorize(Roles = RoleConstants.Customer)]
+      //  [Authorize(Roles = RoleConstants.Customer)]
         [HttpPost]
         public async Task<IActionResult> PlaceOrder([FromBody] OrderRequestDTO dto)
         {

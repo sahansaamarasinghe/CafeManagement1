@@ -81,6 +81,7 @@ var secretKey = Encoding.UTF8.GetBytes(jwtConfig["Key"]);
 //        };
 //    });
 
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new() { Title = "Cafe API", Version = "v1" });
@@ -125,7 +126,7 @@ builder.Services.AddSwaggerGen(options =>
 //});
 
 
-builder.Services.AddAuthorization();
+
 
 //builder.Services.AddControllers();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -163,6 +164,61 @@ builder.Services.ConfigureApplicationCookie(options =>
         return Task.CompletedTask;
     };
 });
+
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//    .AddJwtBearer(options =>
+//    {
+//        options.TokenValidationParameters = new TokenValidationParameters
+//        {
+//            ValidateIssuer = true,
+//            ValidateAudience = true,
+//            ValidateLifetime = true,
+//            ValidateIssuerSigningKey = true,
+//            ValidIssuer = jwtConfig["Issuer"],
+//            ValidAudience = jwtConfig["Audience"],
+//            IssuerSigningKey =
+//                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig["Key"]!))
+//        };
+
+//        //  🔎  LOG the exact validation failure
+//        options.Events = new JwtBearerEvents
+//        {
+//            OnAuthenticationFailed = ctx =>
+//            {
+//                Console.WriteLine($"JWT-FAIL ⇒ {ctx.Exception.Message}");
+//                return Task.CompletedTask;
+//            }
+//        };
+//    });
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtConfig["Issuer"],
+            ValidAudience = jwtConfig["Audience"],
+            IssuerSigningKey =
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(jwtConfig["Key"]!))
+        };
+
+        
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = ctx =>
+            {
+                ctx.HttpContext.RequestServices
+                   .GetRequiredService<ILogger<Program>>()
+                   .LogError(ctx.Exception, "JWT failed");
+                return Task.CompletedTask;
+            }
+        };
+    });
+builder.Services.AddAuthorization();
 var app = builder.Build();
 
 
@@ -187,30 +243,7 @@ using (var scope = app.Services.CreateScope())
 //        options.RoutePrefix = string.Empty;
 //    });
 //}
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtConfig["Issuer"],    // must match the token’s iss
-            ValidAudience = jwtConfig["Audience"],  // must match the token’s aud
-            IssuerSigningKey = new SymmetricSecurityKey(secretKey)
-        };
-
-        // 🔎  TEMP: write any validation failure to the console
-        options.Events = new JwtBearerEvents
-        {
-            OnAuthenticationFailed = ctx =>
-            {
-                Console.WriteLine($"JWT-FAIL → {ctx.Exception.Message}");
-                return Task.CompletedTask;
-            }
-        };
-    });
+;
 
 
 

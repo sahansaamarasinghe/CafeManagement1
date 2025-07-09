@@ -26,6 +26,6 @@ namespace WebApplication2.DTOs
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; }
 
-        public string? Role { get; set; }
+        public string Role { get; set; }
     }
 }
