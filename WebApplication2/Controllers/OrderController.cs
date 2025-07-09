@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WebApplication2.DTOs;
 using WebApplication2.Helpers;
 using WebApplication2.Interfaces;
@@ -33,18 +34,50 @@ namespace WebApplication2.Controllers
         //    return Ok("Order placed successfully");
         //}
 
-      //  [Authorize(Roles = RoleConstants.Customer)]
+        //  [Authorize(Roles = RoleConstants.Customer)]
+        [Authorize(Policy = "CustomerOnly")]
         [HttpPost]
         public async Task<IActionResult> PlaceOrder([FromBody] OrderRequestDTO dto)
         {
-            //var email = "john@example.com";
-            //var testing = _userManager.FindByEmailAsync(email);
-            var userId = _userManager.GetUserId(User); // 
+            ///COORECT
 
-            await _orderService.PlaceOrderAsync(userId, dto);
+            //var email = "lily@example.com";
+
+
+            //var user = await _userManager.FindByEmailAsync(email);
+            //if (user is null) return NotFound("User not found");
+
+            //await _orderService.PlaceOrderAsync(user.Id, dto);
+            //return Ok("Order placed successfully");
+            ///CORRECT
+            ///
+            //var user = await _userManager.GetUserAsync(User);
+            //if (user is null) return Unauthorized();          // should never happen with a good token
+
+            //await _orderService.PlaceOrderAsync(user.Id, dto);  // user.Id is the GUID string
+            //return Ok("Order placed successfully");
+
+
+            
+       
+            var user = await _userManager.GetUserAsync(User);
+            if (user is null) return Unauthorized("User not found for this token");
+
+            // 2) OPTIONAL fallback: if null, use the email claim
+            if (user is null)
+            {
+                var email = User.FindFirstValue(ClaimTypes.Email); // comes from the token
+                if (email is null) return Unauthorized();
+
+                user = await _userManager.FindByEmailAsync(email);
+                if (user is null) return Unauthorized(); // still not found
+            }
+
+            await _orderService.PlaceOrderAsync(user.Id, dto);
             return Ok("Order placed successfully");
         }
 
+        [Authorize(Policy = "CustomerOnly")]
         [HttpGet("my")]
         public async Task<IActionResult> MyOrders()
         {

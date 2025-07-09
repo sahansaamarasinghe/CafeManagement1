@@ -24,11 +24,7 @@ namespace WebApplication2.Services
             _config = config;
         }
 
-        //public async Task<AuthResponseDTO> RegisterAsync(RegisterDTO dto)
-        //{
-
-        //    // Logic to create user, assign role, return JWT
-        //}
+      
         public async Task<AuthResponseDTO> RegisterAsync(RegisterDTO dto)
         {
             // 1️⃣  Figure out which role we’ll assign
