@@ -74,37 +74,7 @@ namespace WebApplication2.Controllers
 
             return Ok(result);
         }
-        //[HttpGet("customers")]
-        //public async Task<IActionResult> GetCustomers()
-        //{
-        //    var customers = _userManager.Users
-        //        .Where(u => _userManager.GetRolesAsync(u).Result.Contains(RoleConstants.Customer))
-        //        .Select(u => new { u.Id, u.Email, u.FullName })
-        //        .ToList();
-
-        //    return Ok(customers);
-        //}
-
-
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> GetUserById(string id)
-        //{
-        //    var user = await _userManager.FindByIdAsync(id);
-        //    if (user == null) return NotFound();
-
-        //    var roles = await _userManager.GetRolesAsync(user);
-        //    var userDto = new UserDetailsDTO
-        //    {
-        //        Id = user.Id,
-        //        FullName = user.FullName,
-        //        UserName = user.UserName,
-        //        Email = user.Email,
-        //        Roles = roles.ToList()
-        //    };
-
-        //    return Ok(userDto);
-        //}
-
+        
 
         [HttpGet("by-email")]
         public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
@@ -125,24 +95,6 @@ namespace WebApplication2.Controllers
 
             return Ok(dto);
         }
-
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> UpdateUser(string id, UpdateUserDTO dto)
-        //{
-        //    var user = await _userManager.FindByIdAsync(id);
-        //    if (user == null) return NotFound();
-
-        //    user.Email = dto.Email;
-        //    user.UserName = dto.UserName;
-        //    user.FullName = dto.FullName;
-
-        //    var result = await _userManager.UpdateAsync(user);
-        //    if (!result.Succeeded)
-        //        return BadRequest(result.Errors);
-
-        //    return Ok("User updated successfully");
-        //}
-
 
         [HttpPut("by-email")]
         public async Task<IActionResult> UpdateByEmail(
@@ -190,59 +142,15 @@ namespace WebApplication2.Controllers
             return Ok("Invitation sent");
         }
 
-
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteUser(string id)
+        //-----------------------DELETE-CUSTOMER------------------------------------------
+        //[HttpDelete]
+        //public async Task<IActionResult> Delete([FromQuery] string email)
         //{
-        //    var user = await _userManager.FindByIdAsync(id);
-        //    if (user == null) return NotFound();
-
-        //    var result = await _userManager.DeleteAsync(user);
-        //    if (!result.Succeeded)
-        //        return BadRequest(result.Errors);
-
-        //    return Ok("User deleted successfully");
-        //}
-
-
-        [HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery] string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user is null) return NotFound();
-
-            var res = await _userManager.DeleteAsync(user);
-            return res.Succeeded ? Ok("Deleted") : BadRequest(res.Errors);
-        }
-
-        //[HttpPost("{id}/role")]
-        //public async Task<IActionResult> AssignRole(string id, AssignRoleDTO dto)
-        //{
-        //    var user = await _userManager.FindByIdAsync(id);
-        //    if (user == null) return NotFound();
-
-        //    var result = await _userManager.AddToRoleAsync(user, dto.Role);
-        //    if (!result.Succeeded)
-        //        return BadRequest(result.Errors);
-
-        //    return Ok("Role assigned successfully");
-        //}
-
-        //[HttpPost("{id}/role")]
-        //public async Task<IActionResult> AssignRole(string id, AssignRoleDTO dto)
-        //{
-        //    if (!RoleConstants.All.Contains(dto.Role))
-        //        return BadRequest("Invalid role.");
-
-        //    var user = await _userManager.FindByIdAsync(id);
+        //    var user = await _userManager.FindByEmailAsync(email);
         //    if (user is null) return NotFound();
 
-        //    // Prevent accidental duplicate assignment
-        //    if (await _userManager.IsInRoleAsync(user, dto.Role))
-        //        return BadRequest("User already has that role.");
-
-        //    var result = await _userManager.AddToRoleAsync(user, dto.Role);
-        //    return result.Succeeded ? Ok("Role assigned.") : BadRequest(result.Errors);
+        //    var res = await _userManager.DeleteAsync(user);
+        //    return res.Succeeded ? Ok("Deleted") : BadRequest(res.Errors);
         //}
 
 

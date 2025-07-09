@@ -19,64 +19,63 @@ namespace WebApplication2.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<OrderController> _logger;
 
 
-        public OrderController(IOrderService orderService, UserManager<ApplicationUser> userManager)
+        public OrderController(IOrderService orderService, UserManager<ApplicationUser> userManager, ILogger<OrderController> logger)
         {
             _orderService = orderService;
             _userManager = userManager;
+            _logger       = logger;  
+
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> PlaceOrder([FromBody] OrderRequestDTO dto)
-        //{
-        //    var userId = _userManager.GetUserId(User);
-        //    await _orderService.PlaceOrderAsync(userId, dto);
-        //    return Ok("Order placed successfully");
-        //}
-
-        //  [Authorize(Roles = RoleConstants.Customer)]
+  
         [Authorize(Policy = "CustomerOnly")]
         [HttpPost]
-        public async Task<IActionResult> PlaceOrder([FromBody] OrderRequestDTO dto)
-        {
-            ///COORECT
-
-            //var email = "lily@example.com";
-
-
-            //var user = await _userManager.FindByEmailAsync(email);
-            //if (user is null) return NotFound("User not found");
-
-            //await _orderService.PlaceOrderAsync(user.Id, dto);
-            //return Ok("Order placed successfully");
-            ///CORRECT
-            ///
-            //var user = await _userManager.GetUserAsync(User);
-            //if (user is null) return Unauthorized();          // should never happen with a good token
-
-            //await _orderService.PlaceOrderAsync(user.Id, dto);  // user.Id is the GUID string
-            //return Ok("Order placed successfully");
-
-
-            
        
+            public async Task<IActionResult> PlaceOrder([FromBody] OrderRequestDTO dto)
+        {
             var user = await _userManager.GetUserAsync(User);
-            if (user is null) return Unauthorized("User not found for this token");
+            if (user is null) return Unauthorized();
 
-            // 2) OPTIONAL fallback: if null, use the email claim
-            if (user is null)
+            try
             {
-                var email = User.FindFirstValue(ClaimTypes.Email); // comes from the token
-                if (email is null) return Unauthorized();
-
-                user = await _userManager.FindByEmailAsync(email);
-                if (user is null) return Unauthorized(); // still not found
+                await _orderService.PlaceOrderAsync(user.Id, dto);
+                return Ok("Order placed successfully");
             }
-
-            await _orderService.PlaceOrderAsync(user.Id, dto);
-            return Ok("Order placed successfully");
+            catch (InvalidOperationException ex)           // validation / business rule
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)                // missing food item or alike
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)                           // anything you didn't expect
+            {
+                _logger.LogError(ex, "PlaceOrder failed");
+                return StatusCode(500, "Unexpected server error.");
+            }
         }
+
+
+        //var user = await _userManager.GetUserAsync(User);
+        //if (user is null) return Unauthorized("User not found for this token");
+
+        //// 2) OPTIONAL fallback: if null, use the email claim
+        //if (user is null)
+        //{
+        //    var email = User.FindFirstValue(ClaimTypes.Email); // comes from the token
+        //    if (email is null) return Unauthorized();
+
+        //    user = await _userManager.FindByEmailAsync(email);
+        //    if (user is null) return Unauthorized(); // still not found
+        //}
+
+        //await _orderService.PlaceOrderAsync(user.Id, dto);
+        //    return Ok("Order placed successfully");
+        //}
 
         [Authorize(Policy = "CustomerOnly")]
         [HttpGet("my")]
@@ -105,11 +104,21 @@ namespace WebApplication2.Controllers
                 MaxTotal = maxTotal
             };
 
-            var orders = await _orderService.GetOrdersForAdminAsync(filter);
-            return Ok(orders);
+            
+            try
+            {
+                var orders = await _orderService.GetOrdersForAdminAsync(filter);
+                return Ok(orders);
+            }
+            catch (InvalidOperationException ex)    // bad input -> 400
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)         // nothing found -> 404
+            {
+                return NotFound(ex.Message);
+            }
+          ;
         }
-
-
     }
-
 }

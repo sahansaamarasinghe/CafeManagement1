@@ -75,14 +75,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = false;
 })
-    .AddEntityFrameworkStores<AppDbContext>()
-.AddDefaultTokenProviders(); 
+    .AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 ;
-
-
-
-var jwtConfig = builder.Configuration.GetSection("JwtConfig");
-var secretKey = Encoding.UTF8.GetBytes(jwtConfig["Key"]);
 
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -99,6 +93,9 @@ builder.Services.ConfigureApplicationCookie(options =>
         return Task.CompletedTask;
     };
 });
+
+var jwtConfig = builder.Configuration.GetSection("JwtConfig");
+var secretKey = Encoding.UTF8.GetBytes(jwtConfig["Key"]);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -119,20 +116,7 @@ builder.Services.AddAuthentication(options =>
                 new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(jwtConfig["Key"]!))
         };
-
-        
-        //options.Events = new JwtBearerEvents
-        //{
-        //    OnAuthenticationFailed = ctx =>
-        //    {
-        //        ctx.HttpContext.RequestServices
-        //           .GetRequiredService<ILogger<Program>>()
-        //           .LogError(ctx.Exception, "JWT failed");
-        //        return Task.CompletedTask;
-        //    }
-        //};
     });
-
 
 builder.Services.AddAuthorization(options =>
 {
@@ -155,11 +139,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
-
 app.Run();
