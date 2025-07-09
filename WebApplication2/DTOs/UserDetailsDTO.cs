@@ -10,13 +10,12 @@
         public List<string> Roles { get; set; }
     }
 
-    public class UpdateUserDTO
+    public class UpdateUserByEmailDTO
     {
-        public string FullName { get; set; }
-        public string UserName { get; set; }
-        public string Email { get; set; }
+        public string? FullName { get; set; }
+        public string? UserName { get; set; }
+        public string? Email { get; set; }    // optional; if present will be set
     }
-
     public class AssignRoleDTO
     {
         public string Role { get; set; }

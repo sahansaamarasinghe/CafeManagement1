@@ -9,12 +9,14 @@ using WebApplication2.Interfaces;
 using WebApplication2.Models;
 using WebApplication2.Services;
 using WebApplication2.Controllers;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
@@ -57,7 +59,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 //// Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options => 
 {
@@ -140,12 +142,8 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-
 using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    await DbInitializer.SeedRoles(services);
-}
+    await DbInitializer.SeedRolesAndAdmins(scope.ServiceProvider);
 
 if (app.Environment.IsDevelopment())
 {

@@ -6,6 +6,8 @@ namespace WebApplication2.Interfaces
     {
         Task PlaceOrderAsync(string userId, OrderRequestDTO dto);
         Task<List<OrderResponseDTO>> GetMyOrdersAsync(string userId);
+
+        Task<List<OrderResponseDTO>> GetOrdersForAdminAsync(OrderFilterDTO filter);
     }
 
 }

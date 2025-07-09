@@ -73,5 +73,7 @@ namespace WebApplication2.Controllers
 
             return Ok("Password set and email confirmed successfully.");
         }
+
+
     }
 }

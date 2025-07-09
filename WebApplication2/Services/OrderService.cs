@@ -93,6 +93,47 @@ namespace WebApplication2.Services
                 })
                 .ToListAsync();
         }
+
+        public async Task<List<OrderResponseDTO>> GetOrdersForAdminAsync(OrderFilterDTO f)
+        {
+            // 1️⃣  start with the whole table
+            var q = _context.Orders
+                            .Include(o => o.OrderItems)
+                                .ThenInclude(oi => oi.FoodItem)
+                            .AsQueryable();
+
+            // 2️⃣  apply filters if provided
+            if (f.From.HasValue)
+                q = q.Where(o => o.OrderDate >= f.From.Value);
+
+            if (f.To.HasValue)
+                q = q.Where(o => o.OrderDate <= f.To.Value);
+
+            if (!string.IsNullOrWhiteSpace(f.Email))
+                q = q.Where(o => o.User.Email == f.Email);   // needs .Include(o => o.User) OR navigation property
+
+            if (f.MinTotal.HasValue)
+                q = q.Where(o => o.TotalAmount >= f.MinTotal.Value);
+
+            if (f.MaxTotal.HasValue)
+                q = q.Where(o => o.TotalAmount <= f.MaxTotal.Value);
+
+            // 3️⃣  (optional) sort newest first
+            q = q.OrderByDescending(o => o.OrderDate);
+
+            // 4️⃣  project to DTO and execute
+            return await q.Select(o => new OrderResponseDTO
+            {
+                OrderId = o.Id,
+                OrderDate = o.OrderDate,
+                TotalAmount = o.TotalAmount,
+                Items = o.OrderItems
+                                        .Select(oi => $"{oi.FoodItem.Name} x{oi.Quantity}")
+                                        .ToList()
+            })
+                    .ToListAsync();
+        }
+
     }
 
 }

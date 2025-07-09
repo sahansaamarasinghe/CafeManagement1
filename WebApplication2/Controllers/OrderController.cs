@@ -6,6 +6,7 @@ using WebApplication2.DTOs;
 using WebApplication2.Helpers;
 using WebApplication2.Interfaces;
 using WebApplication2.Models;
+using WebApplication2.Services;
 
 namespace WebApplication2.Controllers
 {
@@ -85,6 +86,30 @@ namespace WebApplication2.Controllers
             var orders = await _orderService.GetMyOrdersAsync(userId);
             return Ok(orders);
         }
+
+        [Authorize(Policy = "AdminOnly")]
+        [HttpGet("/api/orders")]
+        public async Task<IActionResult> ListOrders(
+            [FromQuery] DateTime? from,
+            [FromQuery] DateTime? to,
+            [FromQuery] string? email,
+            [FromQuery] decimal? minTotal,
+            [FromQuery] decimal? maxTotal)
+        {
+            var filter = new OrderFilterDTO
+            {
+                From = from,
+                To = to,
+                Email = email,
+                MinTotal = minTotal,
+                MaxTotal = maxTotal
+            };
+
+            var orders = await _orderService.GetOrdersForAdminAsync(filter);
+            return Ok(orders);
+        }
+
+
     }
 
 }
