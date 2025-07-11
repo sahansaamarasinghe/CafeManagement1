@@ -9,18 +9,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace WebApplication2.Services
 {
-    /// <summary>
-    /// Sends e-mail either by real SMTP (if configured) or logs to console in dev.
-    /// Bind the "Smtp" section in appsettings.json:
-    ///
-    /// "Smtp": {
-    ///   "Host": "smtp.gmail.com",
-    ///   "Port": 587,
-    ///   "User": "you@gmail.com",
-    ///   "Pass": "AppPassword",
-    ///   "From": "Cafe <no-reply@cafe.com>"
-    /// }
-    /// </summary>
+   
     public class EmailSender : IEmailSender
     {
         private readonly SmtpSettings? _smtp;
@@ -67,7 +56,7 @@ namespace WebApplication2.Services
             public int Port { get; init; } = 587;
             public string User { get; init; } = "";
             public string Pass { get; init; } = "";
-            public string? From { get; init; }    // optional "Friendly <addr>"
+            public string? From { get; init; }   
         }
     }
 }

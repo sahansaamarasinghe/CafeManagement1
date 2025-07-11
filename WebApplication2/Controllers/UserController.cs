@@ -14,7 +14,7 @@ namespace WebApplication2.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmailSender _email;                     // ← inject an email sender
+        private readonly IEmailSender _email;                     
         private readonly IConfiguration _cfg;
        //private readonly UserManager<ApplicationUser> _userManager;
 

@@ -36,7 +36,7 @@ public class ExceptionMiddleware
     {
         ctx.Response.StatusCode = code;
         ctx.Response.ContentType = "application/json";
-        //return ctx.Response.WriteAsync(JsonSerializer.Serialize(new { message = msg }));
+
         return ctx.Response.WriteAsync(JsonSerializer.Serialize(new { statusCode = code, message = msg }));
     }
 }

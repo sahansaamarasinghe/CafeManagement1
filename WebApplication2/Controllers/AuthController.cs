@@ -22,19 +22,6 @@ namespace WebApplication2.Controllers
             _userMgr = userMgr;
         }
 
-        //[HttpPost("register")]
-        //public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
-        //{
-        //    try
-        //    {
-        //        var result = await _authService.RegisterAsync(dto);
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new { message = ex.Message });
-        //    }
-        //}
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
@@ -44,20 +31,7 @@ namespace WebApplication2.Controllers
         }
 
 
-        //[HttpPost("login")]
-        //public async Task<IActionResult> Login([FromBody] LoginDTO dto)
-        //{
-        //    try
-        //    {
-        //        var result = await _authService.LoginAsync(dto);
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Unauthorized(new { message = ex.Message });
-        //    }
-        //}
-
+   
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
@@ -70,14 +44,7 @@ namespace WebApplication2.Controllers
         }
 
 
-        //[Authorize]
-        //[HttpPost("logout")]
-        //public IActionResult Logout()
-        //{
-        //    // No server-side logout for JWT — client should delete token
-        //    return Ok(new { message = "Logout successful. Please remove token on client side." });
-        //}
-
+      
         [Authorize]
         [HttpPost("logout")]
         public IActionResult Logout()
@@ -87,24 +54,6 @@ namespace WebApplication2.Controllers
         }
 
 
-        //[HttpPost("change-password")]
-        //public async Task<IActionResult> SetPassword([FromBody] ChangePasswordDTO dto, [FromServices] UserManager<ApplicationUser> userManager)
-        //{
-        //    var user = await userManager.FindByEmailAsync(dto.Email);
-        //    if (user == null) return NotFound("User not found.");
-
-        //    var resetResult = await userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
-        //    if (!resetResult.Succeeded)
-        //        return BadRequest(resetResult.Errors);
-
-        //    if (!user.EmailConfirmed)
-        //    {
-        //        var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
-        //        await userManager.ConfirmEmailAsync(user, confirmToken);
-        //    }
-
-        //    return Ok("Password set and email confirmed successfully.");
-        //}
 
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangeMyPassword(
