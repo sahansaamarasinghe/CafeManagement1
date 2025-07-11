@@ -12,6 +12,7 @@ using WebApplication2.Controllers;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -138,6 +139,7 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty; 
     });
 }
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors("AllowAll");
 app.UseAuthentication();

@@ -19,12 +19,15 @@ namespace WebApplication2.DTOs
 
     public class ChangePasswordDTO
     {
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email format")]
-        public string Email { get; set; }
+        //[Required(ErrorMessage = "Email is required")]
+        //[EmailAddress(ErrorMessage = "Invalid email format")]
+        //public string Email { get; set; }
 
-        [Required(ErrorMessage = "Token is required")]
-        public string Token { get; set; }
+        [Required(ErrorMessage = "Current password is required")]
+        public string CurrentPassword { get; set; } = null!;
+
+        //[Required(ErrorMessage = "Token is required")]
+        //public string Token { get; set; }
 
         [Required(ErrorMessage = "New Password is required")]
         [StringLength(40, MinimumLength = 8, ErrorMessage = "Password must be between 8 and 40 characters")]
