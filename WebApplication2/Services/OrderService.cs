@@ -2,6 +2,7 @@
 using WebApplication2.Data;
 using WebApplication2.DTOs;
 using WebApplication2.Interfaces;
+using Microsoft.Extensions.Configuration;
 using WebApplication2.Models;
 
 namespace WebApplication2.Services
@@ -9,10 +10,16 @@ namespace WebApplication2.Services
     public class OrderService : IOrderService
     {
         private readonly AppDbContext _context;
+        private readonly int _minQty;
+        private readonly int _maxQty;
 
-        public OrderService(AppDbContext context)
+        public OrderService(AppDbContext context, IConfiguration cfg)
         {
             _context = context;
+
+            _minQty = int.TryParse(cfg["OrderLimits:MinQuantity"], out var min) ? min : 1;
+            _maxQty = int.TryParse(cfg["OrderLimits:MaxQuantity"], out var max) ? max : 50;
+
         }
 
 
@@ -38,9 +45,9 @@ namespace WebApplication2.Services
             foreach (var item in dto.Items)
             {
                 // Quantity has to be between 1-50
-                if (item.Quantity < 1 || item.Quantity > 50)
+                if (item.Quantity < _minQty || item.Quantity > _maxQty)
                     throw new InvalidOperationException(
-                        $"Quantity for foodItemId={item.FoodItemId} must be between 1 and 50.");
+                        $"Quantity for foodItemId={item.FoodItemId} must be between {_minQty} and {_maxQty}.");
 
                 // No duplicate FoodItemId
                 if (!seenIds.Add(item.FoodItemId))
