@@ -76,8 +76,8 @@ namespace WebApplication2.Services
                 throw new UnauthorizedAccessException("Invalid email or password.");   
 
             //confirm email
-            if (!user.EmailConfirmed)
-                throw new InvalidOperationException("Please confirm your e-mail address first.");
+            //if (!user.EmailConfirmed)
+            //    throw new InvalidOperationException("Please confirm your e-mail address first.");
 
             //unlocked account
             if (await _userManager.IsLockedOutAsync(user))
