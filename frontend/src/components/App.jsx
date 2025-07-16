@@ -2,15 +2,16 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 
-import Login from "./Login";
-import SignUpPage from "./SignUpPage";
+import LoginPage from "../pages/LoginPage";
+
+import SignUpPage from "../pages/SignUpPage";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<SignUpPage />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
     </Router>
   );

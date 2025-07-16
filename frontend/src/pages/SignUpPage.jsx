@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
-import NameInput from "./NameInput";
+import NameInput from '../components/NameInput';
+
 const api = import.meta.env.VITE_API_URL;
 
 function SignUpPage() {

@@ -6,4 +6,5 @@ const NameInput = ({ name, placeholder, onChange }) => {
   );
 };
 
+
 export default NameInput;

@@ -10,7 +10,7 @@ public class UserController : ControllerBase
     private readonly IUserService _svc;
     public UserController(IUserService svc) => _svc = svc;
 
-    [HttpGet("all users")]
+    [HttpGet("all-users")]
     public async Task<IActionResult> GetAll()
         => Ok(new { statusCode = 200, data = await _svc.GetAllAsync() });
 
