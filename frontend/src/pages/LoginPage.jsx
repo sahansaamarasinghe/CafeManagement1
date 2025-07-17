@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 const api = import.meta.env.VITE_API_URL;
 import FormInput from "../components/FormInput";
+import "../components/index.css";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const [form, setForm] = useState({
@@ -9,6 +11,10 @@ function LoginPage() {
     password: "",
   });
 
+
+
+
+  const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loggedInUser, setLoggedInUser] = useState(null);
 
@@ -30,10 +36,11 @@ function LoginPage() {
 
       setLoggedInUser(Username);
 
+      navigate("/HomePage");
+
       alert("Login successful");
       console.log("Token:", Token);
       console.log("Roles:", Roles);
-
     } catch (err) {
       console.error("Login error:", err);
       const message =
@@ -68,6 +75,7 @@ function LoginPage() {
       {loggedInUser && (
         <p style={{ color: "green" }}>Welcome, {loggedInUser}!</p>
       )}
+      <button type ="linkbutton" onClick={(navigate("/"))}>Go To SignUp</button>    
     </div>
   );
 }

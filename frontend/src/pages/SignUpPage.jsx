@@ -22,6 +22,7 @@ function SignUpPage() {
 
     // try {
     //   console.log("Submitting form data:", form);
+    
 
     //   const res = await axios.post("https://localhost:7178/api/auth/register", form);5536
 
@@ -34,9 +35,11 @@ function SignUpPage() {
     axios
       .post(`${api}/Auth/register`, form)
       .then((res) => {
+        //debugger;
         console.log("Success", res.data);
       })
       .catch((err) => {
+       // debugger;
         console.log("Error:", err);
       });
   };

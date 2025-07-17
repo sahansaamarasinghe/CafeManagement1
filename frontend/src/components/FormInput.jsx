@@ -7,6 +7,7 @@ function FormInput({ name, type = "text", placeholder, value, onChange, required
       value={value}
       onChange={onChange}
       required={required}
+      style={{justifyContent:"center"}}
     />
   );
 }
