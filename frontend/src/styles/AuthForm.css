@@ -1,0 +1,78 @@
+.auth-page {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("src/assets/Coffee-wallpaper.jpg");
+  opacity: 80%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.auth-form-container {
+  background-color: rgba(255, 255, 255, 0.429);
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
+  align-content: center;
+}
+
+
+.auth-form-container h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+
+  font-size: 1cm;
+  color: #3e2615;
+}
+
+.auth-form-container input {
+  width: 100%;
+  padding: 0.7rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  align-self: center;
+}
+
+.auth-form-container button {
+  width: 100%;
+  padding: 0.7rem;
+  background-color: #6f4e37;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.auth-form-container button:hover {
+  background-color: #563826;
+}
+
+.auth-form-container p {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+
+
+.link-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.link-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}

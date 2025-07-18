@@ -2,17 +2,15 @@ import { useState } from "react";
 import axios from "axios";
 const api = import.meta.env.VITE_API_URL;
 import FormInput from "../components/FormInput";
-import "../components/index.css";
+import "../styles/index.css";
 import { useNavigate } from "react-router-dom";
+import "../styles/AuthForm.css";
 
 function LoginPage() {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
-
-
-
 
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -36,7 +34,7 @@ function LoginPage() {
 
       setLoggedInUser(Username);
 
-      navigate("/HomePage");
+      navigate("/Home");
 
       alert("Login successful");
       console.log("Token:", Token);
@@ -49,33 +47,48 @@ function LoginPage() {
     }
   };
 
+const styles = {}
+
   return (
-    <div style={{ maxWidth: "400px", margin: "auto" }}>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <FormInput
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <FormInput
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {loggedInUser && (
-        <p style={{ color: "green" }}>Welcome, {loggedInUser}!</p>
-      )}
-      <button type ="linkbutton" onClick={(navigate("/"))}>Go To SignUp</button>    
+    <div style={{ maxWidth: "800px", margin: "auto" }}>
+      <div className="auth-page" style={styles}>
+        <button
+          type="button"
+          className="link-button"
+          onClick={() => navigate("/")}
+        >
+          Go To Sign Up
+        </button>
+        <div className="auth-form-container">
+          <h2>Login</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="input-group">
+              <FormInput
+                name="email"
+                type="email"
+                placeholder="Email"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
+              <FormInput
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <button type="submit">Login</button>
+          </form>
+
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          {loggedInUser && (
+            <p style={{ color: "green" }}>Welcome, {loggedInUser}!</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
