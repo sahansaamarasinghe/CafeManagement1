@@ -22,8 +22,15 @@ namespace WebApplication2.Data
     //    }
     //}
 
+
+
+   
+
+
     public static class DbInitializer
     {
+
+
         public static async Task SeedRolesAndAdmins(IServiceProvider services)
         {
 
@@ -67,6 +74,37 @@ namespace WebApplication2.Data
                 // b) Ensure the user is in the Admin role
                 if (!await userMgr.IsInRoleAsync(admin, RoleConstants.Admin))
                     await userMgr.AddToRoleAsync(admin, RoleConstants.Admin);
+
+
+
+
+
+                // ✅ 3️⃣ Ensure guest user exists
+                var guestUserId = "guest_user_01";
+                var guestEmail = "guest@cafeapp.com";
+                var guestUser = await userMgr.FindByIdAsync(guestUserId);
+
+                if (guestUser is null)
+                {
+                    guestUser = new ApplicationUser
+                    {
+                        Id = guestUserId, 
+                        UserName = "guestuser",
+                        Email = guestEmail,
+                        FullName = "Guest User",
+                        EmailConfirmed = true
+                    };
+
+                    var guestCreated = await userMgr.CreateAsync(guestUser, "Guest@123");
+
+                    if (!guestCreated.Succeeded)
+                        throw new Exception($"Guest user seed failed: " +
+                            string.Join(", ", guestCreated.Errors.Select(e => e.Description)));
+                }
+
+                if (!await userMgr.IsInRoleAsync(guestUser, RoleConstants.Customer))
+                    await userMgr.AddToRoleAsync(guestUser, RoleConstants.Customer);
+
             }
         }
     }
