@@ -28,18 +28,18 @@
 
 //        }
 
-//        [Authorize(Policy = "CustomerOnly")]
-//        [HttpPost]
-//        public async Task<IActionResult> PlaceOrder([FromBody] OrderRequestDTO dto)
-//        {
-//            var user = await _userManager.GetUserAsync(User);
-//            if (user is null)
-//                return Unauthorized(new { statusCode = 401, message = "Unauthorized" });
+        //[Authorize(Policy = "CustomerOnly")]
+        //[HttpPost]
+        //public async Task<IActionResult> PlaceOrder([FromBody] OrderRequestDTO dto)
+        //{
+        //    var user = await _userManager.GetUserAsync(User);
+        //    if (user is null)
+        //        return Unauthorized(new { statusCode = 401, message = "Unauthorized" });
 
-//            await _orderService.PlaceOrderAsync(user.Id, dto);   // may throw → middleware handles
+        //    await _orderService.PlaceOrderAsync(user.Id, dto);   // may throw → middleware handles
 
-//            return Ok(new { statusCode = 200, message = "Order placed successfully" });
-//        }
+        //    return Ok(new { statusCode = 200, message = "Order placed successfully" });
+        //}
 
 
 
@@ -107,7 +107,7 @@ namespace WebApplication2.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
+        [HttpPost("place-order")]
         public async Task<IActionResult> PlaceOrder([FromBody] OrderRequestDTO dto)
         {
             // Use a static guest user ID for unauthenticated users
@@ -122,7 +122,7 @@ namespace WebApplication2.Controllers
         [HttpGet("guest-orders")]
         public async Task<IActionResult> GuestOrders()
         {
-            string guestUserId = "guest_user_01";  // same as used in PlaceOrder
+            string guestUserId = "guest_user_01";  
             var orders = await _orderService.GetMyOrdersAsync(guestUserId);
             return Ok(orders);
         }
